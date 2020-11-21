@@ -3,11 +3,29 @@
     using System;
     public class ParkingBoy
     {
-        public string ParkACar(string plateNumber, ParkingLot parkingLot)
+        public void ParkCars(string[] plateNumbers, ParkingLot parkingLot)
         {
-            parkingLot.PositionNumber -= 1;
-            parkingLot.TicketList.Add(plateNumber);
-            return parkingLot.TicketList.Find(number => number == plateNumber);
+            const int positionReduceNumberPerTime = 1;
+            foreach (var plateNumber in plateNumbers)
+            {
+                parkingLot.CarList.Add(plateNumber);
+                parkingLot.TicketList.Add(plateNumber);
+                parkingLot.PositionNumber -= positionReduceNumberPerTime;
+            }
+        }
+
+        public void FetchCars(string[] tickets, ParkingLot parkingLot)
+        {
+            const int positionReduceNumberPerTime = 1;
+            foreach (var ticket in tickets)
+            {
+                if (parkingLot.CarList.Find(number => number == ticket) != null)
+                {
+                    parkingLot.CarList.Remove(ticket);
+                    parkingLot.TicketList.Remove(ticket);
+                    parkingLot.PositionNumber += positionReduceNumberPerTime;
+                }
+            }
         }
     }
 }
