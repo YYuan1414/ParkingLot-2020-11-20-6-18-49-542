@@ -55,6 +55,30 @@ namespace ParkingLotTest
             Assert.Null(fetchedCar);
         }
 
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("G 123433")]
+        public void Parking_Boy_Can_Fetch_No_Car_By_NUll_Or_Wrong_Ticket_Test(string ticket)
+        {
+            //given
+            const int numberOfFetchedCar = 1;
+            const int index = 0;
+            var plateNumber = new string[numberOfFetchedCar] { "G 123455" };
+            var ticketStrings = new string[numberOfFetchedCar] { ticket };
+
+            //when
+            var parkingLot = new ParkingLot();
+            var parkingBoy = new ParkingBoy();
+            parkingBoy.ParkCars(plateNumber, parkingLot);
+            var canFetchCar = parkingBoy.FetchCars(ticketStrings, parkingLot);
+            var fetchedCar = parkingLot.CarList.Find(car => car == ticket);
+
+            //then
+            Assert.Null(fetchedCar);
+            Assert.False(canFetchCar);
+        }
+
         [Fact]
         public void Parking_Boy_Can_Park_Multiple_Cars_Into_Parking_Lot_Test()
         {
