@@ -47,10 +47,11 @@ namespace ParkingLotTest
             var parkingLot = new ParkingLot();
             var parkingBoy = new ParkingBoy();
             parkingBoy.ParkCars(plateNumber, parkingLot);
-            parkingBoy.FetchCars(ticketStrings, parkingLot);
+            var canFetchCar = parkingBoy.FetchCars(ticketStrings, parkingLot);
             var fetchedCar = parkingLot.CarList.Find(car => car == plateNumber[index]);
 
             //then
+            Assert.True(canFetchCar);
             Assert.Null(fetchedCar);
         }
 
