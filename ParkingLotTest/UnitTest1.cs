@@ -1,5 +1,7 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ParkingLotTest
 {
@@ -131,6 +133,30 @@ namespace ParkingLotTest
             //then
             Assert.Null(fetchedCar);
             Assert.False(canFetchCarTwice);
+        }
+
+        [Fact]
+        public void Parking_Boy_Can_Fetch_No_Car_If_No_Position_In_ParkingLot_Test()
+        {
+            //given
+            const int numberOfFetchedCar = 1;
+            const int index = numberOfFetchedCar - 1;
+            var plateNumber = new string[numberOfFetchedCar] { "G 123455" };
+            Ticket usedTicket = new Ticket() { TicketMarker = plateNumber[index], IsUsed = false };
+            var parkingLot = new ParkingLot();
+            var parkingBoy = new ParkingBoy();
+            //when
+            parkingLot.CarList = new List<string>();
+
+            for (int carIndex = 0; carIndex < parkingLot.PositionNumber; carIndex++)
+            {
+                parkingLot.CarList.Add("G 12345" + carIndex);
+            }
+
+            Ticket[] tickets = parkingBoy.ParkCars(plateNumber, parkingLot);
+
+            //then
+            Assert.Null(tickets);
         }
     }
 }

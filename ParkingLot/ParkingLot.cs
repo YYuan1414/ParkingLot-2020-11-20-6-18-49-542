@@ -4,7 +4,7 @@ namespace ParkingLot
 {
     public class ParkingLot
     {
-        private const int PositionMaxNumber = 10;
+        public const int PositionMaxNumber = 10;
         private List<string> carList = new List<string>();
         private int positionNumber = PositionMaxNumber;
         public int PositionNumber

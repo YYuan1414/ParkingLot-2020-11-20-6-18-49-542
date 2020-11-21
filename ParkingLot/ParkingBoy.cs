@@ -8,16 +8,21 @@ namespace ParkingLot
         public Ticket[] ParkCars(string[] plateNumbers, ParkingLot parkingLot)
         {
             const int positionReduceNumberPerTime = 1;
-            Ticket[] tickets = plateNumbers.Where(number => number != null)
-                .Select(it => new Ticket { TicketMarker = it, IsUsed = false })
-                .ToArray();
-            foreach (var plateNumber in plateNumbers)
+            if (parkingLot.CarList.Count < ParkingLot.PositionMaxNumber - plateNumbers.Length)
             {
-                parkingLot.CarList.Add(plateNumber);
-                parkingLot.PositionNumber -= positionReduceNumberPerTime;
+                Ticket[] tickets = plateNumbers.Where(number => number != null)
+                    .Select(it => new Ticket { TicketMarker = it, IsUsed = false })
+                    .ToArray();
+                foreach (var plateNumber in plateNumbers)
+                {
+                    parkingLot.CarList.Add(plateNumber);
+                    parkingLot.PositionNumber -= positionReduceNumberPerTime;
+                }
+
+                return tickets;
             }
 
-            return tickets;
+            return null;
         }
 
         public bool FetchTheCar(Ticket ticket, ParkingLot parkingLot)
