@@ -19,12 +19,9 @@
             const int positionReduceNumberPerTime = 1;
             foreach (var ticket in tickets)
             {
-                if (parkingLot.CarList.Find(number => number == ticket) != null)
-                {
-                    parkingLot.CarList.Remove(ticket);
-                    parkingLot.TicketList.Remove(ticket);
-                    parkingLot.PositionNumber += positionReduceNumberPerTime;
-                }
+                parkingLot.CarList.Remove(ticket);
+                parkingLot.TicketList.Remove(ticket);
+                parkingLot.PositionNumber += positionReduceNumberPerTime;
             }
         }
     }

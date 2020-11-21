@@ -15,6 +15,7 @@ namespace ParkingLotTest
             var plateNumber = new string[1] { "G 123455" };
             var expectedReducedNUmberOfPosition = 1;
             var expectedIncreasedNumberOfCar = 1;
+            var index = plateNumber.Length - 1;
 
             //when
             var parkingLot = new ParkingLot();
@@ -28,6 +29,7 @@ namespace ParkingLotTest
             var actualIncreasedNumberOfCar = currentCarListNumber - initialCarListNumber;
 
             //then
+            Assert.NotNull(parkingLot.CarList.Find(number => number == plateNumber[index]));
             Assert.Equal(expectedIncreasedNumberOfCar, actualIncreasedNumberOfCar);
             Assert.Equal(expectedReducedNUmberOfPosition, actualReducedNUmberOfPosition);
         }
