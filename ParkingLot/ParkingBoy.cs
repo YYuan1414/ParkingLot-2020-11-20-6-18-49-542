@@ -20,11 +20,7 @@
             foreach (var ticket in tickets)
             {
                 string hasTheCar = parkingLot.CarList.Find(number => number == ticket);
-                if (string.IsNullOrEmpty(ticket))
-                {
-                    return false;
-                }
-                else if (hasTheCar == null)
+                if (string.IsNullOrEmpty(ticket) || hasTheCar == null)
                 {
                     return false;
                 }
