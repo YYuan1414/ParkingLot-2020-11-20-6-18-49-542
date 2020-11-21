@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Xunit.Sdk;
 
 namespace ParkingLotTest
 {
@@ -24,7 +25,7 @@ namespace ParkingLotTest
             var initialPositionNumber = parkingLot.PositionNumber;
             var initialCarListNumber = parkingLot.CarList.Count;
             var parkingBoy = new ParkingBoy();
-            parkingBoy.ParkCars(plateNumber, parkingLot);
+            parkingBoy.ParkCars(plateNumber, parkingLot, false);
             var currentPositionNumber = parkingLot.PositionNumber;
             var currentCarListNumber = parkingLot.CarList.Count;
             var actualReducedNUmberOfPosition = initialPositionNumber - currentPositionNumber;
@@ -48,7 +49,7 @@ namespace ParkingLotTest
             //when
             var parkingLot = new ParkingLot();
             var parkingBoy = new ParkingBoy();
-            Ticket[] tickets = parkingBoy.ParkCars(plateNumber, parkingLot);
+            Ticket[] tickets = parkingBoy.ParkCars(plateNumber, parkingLot, false);
             Random random = new Random();
             var intIndex = random.Next(0, tickets.Length);
             var canFetchCar = parkingBoy.FetchTheCar(tickets[intIndex], parkingLot);
@@ -75,7 +76,7 @@ namespace ParkingLotTest
             //when
             var parkingLot = new ParkingLot();
             var parkingBoy = new ParkingBoy();
-            Ticket[] tickets = parkingBoy.ParkCars(plateNumber, parkingLot);
+            Ticket[] tickets = parkingBoy.ParkCars(plateNumber, parkingLot, false);
             var canFetchCar = parkingBoy.FetchTheCar(wrongTicket, parkingLot);
             var fetchedCar = parkingLot.CarList.Find(car => car == ticket);
 
@@ -97,7 +98,7 @@ namespace ParkingLotTest
             var initialPositionNumber = parkingLot.PositionNumber;
             var initialCarListNumber = parkingLot.CarList.Count;
             var parkingBoy = new ParkingBoy();
-            Ticket[] tickets = parkingBoy.ParkCars(plateNumbers, parkingLot);
+            Ticket[] tickets = parkingBoy.ParkCars(plateNumbers, parkingLot, false);
             var currentPositionNumber = parkingLot.PositionNumber;
             var currentCarListNumber = parkingLot.CarList.Count;
             var actualReducedNUmberOfPosition = initialPositionNumber - currentPositionNumber;
@@ -125,7 +126,7 @@ namespace ParkingLotTest
             //when
             var parkingLot = new ParkingLot();
             var parkingBoy = new ParkingBoy();
-            Ticket[] tickets = parkingBoy.ParkCars(plateNumber, parkingLot);
+            Ticket[] tickets = parkingBoy.ParkCars(plateNumber, parkingLot, false);
             var canFetchCar = parkingBoy.FetchTheCar(usedTicket, parkingLot);
             var canFetchCarTwice = parkingBoy.FetchTheCar(usedTicket, parkingLot);
             var fetchedCar = parkingLot.CarList.Find(car => car == usedTicket.TicketMarker);
@@ -153,10 +154,44 @@ namespace ParkingLotTest
                 parkingLot.CarList.Add("G 12345" + carIndex);
             }
 
-            Ticket[] tickets = parkingBoy.ParkCars(plateNumber, parkingLot);
+            Ticket[] tickets = parkingBoy.ParkCars(plateNumber, parkingLot, false);
 
             //then
             Assert.Null(tickets);
+        }
+
+        [Theory]
+        [InlineData(null, "Not enough position.")]
+        //[InlineData("", "Unrecognized parking ticket.")]
+        //[InlineData("G 123433", "Unrecognized parking ticket.")]
+        public void Get_Unrecognized_parking_ticket_Error_Message_Test(string ticket, string errorMessage)
+        {
+            //given
+            const int numberOfFetchedCar = 1;
+            const int index = 0;
+            var plateNumber = new string[numberOfFetchedCar] { "G 123455" };
+            var ticketStrings = new string[numberOfFetchedCar] { ticket };
+            Ticket wrongTicket = new Ticket() { TicketMarker = ticket, IsUsed = false };
+
+            //when
+            var parkingLot = new ParkingLot();
+            var parkingBoy = new ParkingBoy();
+            parkingLot.CarList = new List<string>();
+
+            for (int carIndex = 0; carIndex < parkingLot.PositionNumber; carIndex++)
+            {
+                parkingLot.CarList.Add("G 12345" + carIndex);
+            }
+
+            Ticket[] tickets = parkingBoy.ParkCars(plateNumber, parkingLot, true);
+            var message = parkingBoy.Response;
+            var canFetchCar = parkingBoy.FetchTheCar(wrongTicket, parkingLot);
+            var fetchedCar = parkingLot.CarList.Find(car => car == ticket);
+
+            //then
+            Assert.Null(fetchedCar);
+            Assert.Equal(errorMessage, message);
+            Assert.False(canFetchCar);
         }
     }
 }

@@ -5,7 +5,14 @@ namespace ParkingLot
     using System;
     public class ParkingBoy
     {
-        public Ticket[] ParkCars(string[] plateNumbers, ParkingLot parkingLot)
+        private string response = string.Empty;
+
+        public string Response
+        {
+            get { return response; }
+        }
+
+        public Ticket[] ParkCars(string[] plateNumbers, ParkingLot parkingLot, bool queryErrorMessage)
         {
             const int positionReduceNumberPerTime = 1;
             if (parkingLot.CarList.Count < ParkingLot.PositionMaxNumber - plateNumbers.Length)
@@ -21,8 +28,17 @@ namespace ParkingLot
 
                 return tickets;
             }
+            else
+            {
+                if (queryErrorMessage)
+                {
+                    var errorMessage = new ErrorMessage();
+                    var messageBox = errorMessage.SetValue();
+                    response = messageBox["noPosition"];
+                }
 
-            return null;
+                return null;
+            }
         }
 
         public bool FetchTheCar(Ticket ticket, ParkingLot parkingLot)
