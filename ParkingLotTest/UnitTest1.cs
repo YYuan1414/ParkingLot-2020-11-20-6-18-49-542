@@ -46,8 +46,10 @@ namespace ParkingLotTest
             //when
             var parkingLot = new ParkingLot();
             var parkingBoy = new ParkingBoy();
-            parkingBoy.ParkCars(plateNumber, parkingLot);
-            var canFetchCar = parkingBoy.FetchCars(ticketStrings, parkingLot);
+            Ticket[] tickets = parkingBoy.ParkCars(plateNumber, parkingLot);
+            Random random = new Random();
+            var intIndex = random.Next(0, tickets.Length);
+            var canFetchCar = parkingBoy.FetchTheCar(tickets[intIndex], parkingLot);
             var fetchedCar = parkingLot.CarList.Find(car => car == plateNumber[index]);
 
             //then
@@ -59,19 +61,20 @@ namespace ParkingLotTest
         [InlineData(null)]
         [InlineData("")]
         [InlineData("G 123433")]
-        public void Parking_Boy_Can_Fetch_No_Car_By_NUll_Or_Wrong_Ticket_Test(string ticket)
+        public void Parking_Boy_Can_Fetch_No_Car_By_Null_Or_Wrong_Ticket_Test(string ticket)
         {
             //given
             const int numberOfFetchedCar = 1;
             const int index = 0;
             var plateNumber = new string[numberOfFetchedCar] { "G 123455" };
             var ticketStrings = new string[numberOfFetchedCar] { ticket };
+            Ticket wrongTicket = new Ticket() { TicketMarker = ticket, IsUsed = false };
 
             //when
             var parkingLot = new ParkingLot();
             var parkingBoy = new ParkingBoy();
-            parkingBoy.ParkCars(plateNumber, parkingLot);
-            var canFetchCar = parkingBoy.FetchCars(ticketStrings, parkingLot);
+            Ticket[] tickets = parkingBoy.ParkCars(plateNumber, parkingLot);
+            var canFetchCar = parkingBoy.FetchTheCar(wrongTicket, parkingLot);
             var fetchedCar = parkingLot.CarList.Find(car => car == ticket);
 
             //then
@@ -83,22 +86,27 @@ namespace ParkingLotTest
         public void Parking_Boy_Can_Park_Multiple_Cars_Into_Parking_Lot_Test()
         {
             //given
-            var plateNumber = new string[] { "G 123455", "G 234561", "A HG125555" };
-            var expectedReducedNUmberOfPosition = plateNumber.Length;
-            var expectedIncreasedNumberOfCar = plateNumber.Length;
+            var plateNumbers = new string[] { "G 123455", "G 234561", "A HG125555" };
+            var expectedReducedNUmberOfPosition = plateNumbers.Length;
+            var expectedIncreasedNumberOfCar = plateNumbers.Length;
 
             //when
             var parkingLot = new ParkingLot();
             var initialPositionNumber = parkingLot.PositionNumber;
             var initialCarListNumber = parkingLot.CarList.Count;
             var parkingBoy = new ParkingBoy();
-            parkingBoy.ParkCars(plateNumber, parkingLot);
+            Ticket[] tickets = parkingBoy.ParkCars(plateNumbers, parkingLot);
             var currentPositionNumber = parkingLot.PositionNumber;
             var currentCarListNumber = parkingLot.CarList.Count;
             var actualReducedNUmberOfPosition = initialPositionNumber - currentPositionNumber;
             var actualIncreasedNumberOfCar = currentCarListNumber - initialCarListNumber;
 
             //then
+            foreach (var plateNumber in plateNumbers)
+            {
+                Assert.NotNull(parkingLot.CarList.Find(number => number == plateNumber));
+            }
+
             Assert.Equal(expectedIncreasedNumberOfCar, actualIncreasedNumberOfCar);
             Assert.Equal(expectedReducedNUmberOfPosition, actualReducedNUmberOfPosition);
         }
