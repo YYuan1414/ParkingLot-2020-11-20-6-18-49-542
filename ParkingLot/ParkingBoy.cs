@@ -24,7 +24,7 @@ namespace ParkingLot
         {
             const int positionReduceNumberPerTime = 1;
             string hasTheCar = parkingLot.CarList.Find(number => number == ticket.TicketMarker);
-            if (string.IsNullOrEmpty(ticket.TicketMarker) || hasTheCar == null)
+            if (string.IsNullOrEmpty(ticket.TicketMarker) || hasTheCar == null || ticket.IsUsed)
             {
                 return false;
             }

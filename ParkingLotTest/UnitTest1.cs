@@ -110,5 +110,27 @@ namespace ParkingLotTest
             Assert.Equal(expectedIncreasedNumberOfCar, actualIncreasedNumberOfCar);
             Assert.Equal(expectedReducedNUmberOfPosition, actualReducedNUmberOfPosition);
         }
+
+        [Fact]
+        public void Parking_Boy_Can_Fetch_No_Car_By_Used_Ticket_Test()
+        {
+            //given
+            const int numberOfFetchedCar = 1;
+            const int index = numberOfFetchedCar - 1;
+            var plateNumber = new string[numberOfFetchedCar] { "G 123455" };
+            Ticket usedTicket = new Ticket() { TicketMarker = plateNumber[index], IsUsed = false };
+
+            //when
+            var parkingLot = new ParkingLot();
+            var parkingBoy = new ParkingBoy();
+            Ticket[] tickets = parkingBoy.ParkCars(plateNumber, parkingLot);
+            var canFetchCar = parkingBoy.FetchTheCar(usedTicket, parkingLot);
+            var canFetchCarTwice = parkingBoy.FetchTheCar(usedTicket, parkingLot);
+            var fetchedCar = parkingLot.CarList.Find(car => car == usedTicket.TicketMarker);
+
+            //then
+            Assert.Null(fetchedCar);
+            Assert.False(canFetchCarTwice);
+        }
     }
 }
