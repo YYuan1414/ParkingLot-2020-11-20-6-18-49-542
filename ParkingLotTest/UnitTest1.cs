@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 
 namespace ParkingLotTest
 {
@@ -35,15 +36,17 @@ namespace ParkingLotTest
         public void Parking_Boy_Can_Fetch_The_Car_By_Ticket_Test()
         {
             //given
-            var plateNumber = new string[1] { "G 123455" };
-            var ticketStrings = new string[1] { "G 123455" };
+            const int numberOfFetchedCar = 1;
+            const int index = 0;
+            var plateNumber = new string[numberOfFetchedCar] { "G 123455" };
+            var ticketStrings = new string[numberOfFetchedCar] { "G 123455" };
 
             //when
             var parkingLot = new ParkingLot();
             var parkingBoy = new ParkingBoy();
             parkingBoy.ParkCars(plateNumber, parkingLot);
             parkingBoy.FetchCars(ticketStrings, parkingLot);
-            var fetchedCar = parkingLot.CarList.Find(car => car == plateNumber[0]);
+            var fetchedCar = parkingLot.CarList.Find(car => car == plateNumber[index]);
 
             //then
             Assert.Null(fetchedCar);
