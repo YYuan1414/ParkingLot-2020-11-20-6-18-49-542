@@ -28,34 +28,51 @@ namespace ParkingLot
 
                 return tickets;
             }
+
             else
             {
-                if (queryErrorMessage)
-                {
-                    var errorMessage = new ErrorMessage();
-                    var messageBox = errorMessage.SetValue();
-                    response = messageBox["noPosition"];
-                }
-
+                SendErrorMessage(queryErrorMessage, "noPosition");
                 return null;
             }
         }
 
-        public bool FetchTheCar(Ticket ticket, ParkingLot parkingLot)
+        public bool FetchTheCar(Ticket ticket, ParkingLot parkingLot, bool queryErrorMessage)
         {
-            const int positionReduceNumberPerTime = 1;
-            string hasTheCar = parkingLot.CarList.Find(number => number == ticket.TicketMarker);
-            if (string.IsNullOrEmpty(ticket.TicketMarker) || hasTheCar == null || ticket.IsUsed)
+            if (string.IsNullOrEmpty(response))
             {
-                return false;
-            }
-            else
-            {
+                const int positionReduceNumberPerTime = 1;
+                string hasTheCar = parkingLot.CarList.Find(number => number == ticket.TicketMarker);
+                if (string.IsNullOrEmpty(ticket.TicketMarker))
+                {
+                    SendErrorMessage(queryErrorMessage, "nullTicket");
+                    return false;
+                }
+
+                if (hasTheCar == null || ticket.IsUsed)
+                {
+                    SendErrorMessage(queryErrorMessage, "wrongTicket");
+                    return false;
+                }
+
                 parkingLot.CarList.Remove(ticket.TicketMarker);
                 ticket.IsUsed = true;
                 parkingLot.PositionNumber += positionReduceNumberPerTime;
                 return true;
             }
+
+            return false;
+        }
+
+        private string SendErrorMessage(bool queryErrorMessage, string condition)
+        {
+            if (queryErrorMessage)
+            {
+                var errorMessage = new ErrorMessage();
+                var messageBox = errorMessage.SetValue();
+                response = messageBox[condition];
+            }
+
+            return response;
         }
     }
 }

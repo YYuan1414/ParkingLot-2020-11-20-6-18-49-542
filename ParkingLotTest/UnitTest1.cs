@@ -43,6 +43,7 @@ namespace ParkingLotTest
             //given
             const int numberOfFetchedCar = 1;
             const int index = 0;
+            const bool requryMessage = true;
             var plateNumber = new string[numberOfFetchedCar] { "G 123455" };
             var ticketStrings = new string[numberOfFetchedCar] { "G 123455" };
 
@@ -52,7 +53,7 @@ namespace ParkingLotTest
             Ticket[] tickets = parkingBoy.ParkCars(plateNumber, parkingLot, false);
             Random random = new Random();
             var intIndex = random.Next(0, tickets.Length);
-            var canFetchCar = parkingBoy.FetchTheCar(tickets[intIndex], parkingLot);
+            var canFetchCar = parkingBoy.FetchTheCar(tickets[intIndex], parkingLot, requryMessage);
             var fetchedCar = parkingLot.CarList.Find(car => car == plateNumber[index]);
 
             //then
@@ -69,6 +70,7 @@ namespace ParkingLotTest
             //given
             const int numberOfFetchedCar = 1;
             const int index = 0;
+            const bool requryMessage = false;
             var plateNumber = new string[numberOfFetchedCar] { "G 123455" };
             var ticketStrings = new string[numberOfFetchedCar] { ticket };
             Ticket wrongTicket = new Ticket() { TicketMarker = ticket, IsUsed = false };
@@ -76,8 +78,8 @@ namespace ParkingLotTest
             //when
             var parkingLot = new ParkingLot();
             var parkingBoy = new ParkingBoy();
-            Ticket[] tickets = parkingBoy.ParkCars(plateNumber, parkingLot, false);
-            var canFetchCar = parkingBoy.FetchTheCar(wrongTicket, parkingLot);
+            Ticket[] tickets = parkingBoy.ParkCars(plateNumber, parkingLot, requryMessage);
+            var canFetchCar = parkingBoy.FetchTheCar(wrongTicket, parkingLot, requryMessage);
             var fetchedCar = parkingLot.CarList.Find(car => car == ticket);
 
             //then
@@ -121,14 +123,15 @@ namespace ParkingLotTest
             const int numberOfFetchedCar = 1;
             const int index = numberOfFetchedCar - 1;
             var plateNumber = new string[numberOfFetchedCar] { "G 123455" };
+            const bool requryMessage = false;
             Ticket usedTicket = new Ticket() { TicketMarker = plateNumber[index], IsUsed = false };
 
             //when
             var parkingLot = new ParkingLot();
             var parkingBoy = new ParkingBoy();
             Ticket[] tickets = parkingBoy.ParkCars(plateNumber, parkingLot, false);
-            var canFetchCar = parkingBoy.FetchTheCar(usedTicket, parkingLot);
-            var canFetchCarTwice = parkingBoy.FetchTheCar(usedTicket, parkingLot);
+            var canFetchCar = parkingBoy.FetchTheCar(usedTicket, parkingLot, requryMessage);
+            var canFetchCarTwice = parkingBoy.FetchTheCar(usedTicket, parkingLot, requryMessage);
             var fetchedCar = parkingLot.CarList.Find(car => car == usedTicket.TicketMarker);
 
             //then
@@ -161,17 +164,40 @@ namespace ParkingLotTest
         }
 
         [Theory]
-        [InlineData(null, "Not enough position.")]
-        //[InlineData("", "Unrecognized parking ticket.")]
-        //[InlineData("G 123433", "Unrecognized parking ticket.")]
-        public void Get_Unrecognized_parking_ticket_Error_Message_Test(string ticket, string errorMessage)
+        [InlineData("G 123455", "Unrecognized parking ticket.")]
+        public void Get_Unrecognized_parking_ticket_Error_Message_When_Ticket_Has_Been_Used_Test(string ticket, string errorMessage)
         {
             //given
             const int numberOfFetchedCar = 1;
             const int index = 0;
+            const bool requryMessage = true;
             var plateNumber = new string[numberOfFetchedCar] { "G 123455" };
-            var ticketStrings = new string[numberOfFetchedCar] { ticket };
-            Ticket wrongTicket = new Ticket() { TicketMarker = ticket, IsUsed = false };
+            Ticket requiredTicket = new Ticket() { TicketMarker = plateNumber[index], IsUsed = false };
+
+            //when
+            var parkingLot = new ParkingLot();
+            var parkingBoy = new ParkingBoy();
+            parkingLot.CarList = new List<string>();
+            Ticket[] tickets = parkingBoy.ParkCars(plateNumber, parkingLot, requryMessage);
+            parkingBoy.FetchTheCar(requiredTicket, parkingLot, requryMessage);
+            var canFetchCarTwice = parkingBoy.FetchTheCar(requiredTicket, parkingLot, requryMessage);
+            var message = parkingBoy.Response;
+
+            //then
+            Assert.Equal(errorMessage, message);
+            Assert.False(canFetchCarTwice);
+        }
+
+        [Theory]
+        [InlineData("G 123455", "Not enough position.")]
+        public void Get_Not_enough_position_Error_Message_Test(string ticket, string errorMessage)
+        {
+            //given
+            const int numberOfFetchedCar = 1;
+            const int index = 0;
+            const bool requryMessage = true;
+            var plateNumber = new string[numberOfFetchedCar] { "G 123455" };
+            Ticket requiredTicket = new Ticket() { TicketMarker = null, IsUsed = true };
 
             //when
             var parkingLot = new ParkingLot();
@@ -183,9 +209,34 @@ namespace ParkingLotTest
                 parkingLot.CarList.Add("G 12345" + carIndex);
             }
 
-            Ticket[] tickets = parkingBoy.ParkCars(plateNumber, parkingLot, true);
+            Ticket[] tickets = parkingBoy.ParkCars(plateNumber, parkingLot, requryMessage);
+            var canFetchCar = parkingBoy.FetchTheCar(requiredTicket, parkingLot, requryMessage);
             var message = parkingBoy.Response;
-            var canFetchCar = parkingBoy.FetchTheCar(wrongTicket, parkingLot);
+
+            //then
+            Assert.Equal(errorMessage, message);
+            Assert.False(canFetchCar);
+        }
+
+        [Theory]
+        [InlineData(null, "Please provide your parking ticket.")]
+        public void Get_Please_provide_Your_Parking_Ticket_Error_Message_Test(string ticket, string errorMessage)
+        {
+            //given
+            const int numberOfFetchedCar = 1;
+            const int index = 0;
+            const bool requryMessage = true;
+            var plateNumber = new string[numberOfFetchedCar] { "G 123455" };
+            var ticketStrings = new string[numberOfFetchedCar] { ticket };
+            Ticket wrongTicket = new Ticket() { TicketMarker = ticket, IsUsed = false };
+
+            //when
+            var parkingLot = new ParkingLot();
+            var parkingBoy = new ParkingBoy();
+            parkingLot.CarList = new List<string>();
+            Ticket[] tickets = parkingBoy.ParkCars(plateNumber, parkingLot, requryMessage);
+            var canFetchCar = parkingBoy.FetchTheCar(wrongTicket, parkingLot, requryMessage);
+            var message = parkingBoy.Response;
             var fetchedCar = parkingLot.CarList.Find(car => car == ticket);
 
             //then
