@@ -21,7 +21,7 @@ namespace ParkingLotTest
             var index = plateNumber.Length - 1;
 
             //when
-            var parkingLot = new ParkingLot();
+            var parkingLot = InitializeParkingLotWithPosition();
             var initialPositionNumber = parkingLot.PositionNumber;
             var initialCarListNumber = parkingLot.CarList.Count;
             var parkingBoy = new ParkingBoy();
@@ -48,7 +48,7 @@ namespace ParkingLotTest
             var ticketStrings = new string[numberOfFetchedCar] { "G 123455" };
 
             //when
-            var parkingLot = new ParkingLot();
+            var parkingLot = InitializeParkingLotWithPosition();
             var parkingBoy = new ParkingBoy();
             Ticket[] tickets = parkingBoy.ParkCars(plateNumber, parkingLot, false);
             Random random = new Random();
@@ -76,7 +76,7 @@ namespace ParkingLotTest
             Ticket wrongTicket = new Ticket() { TicketMarker = ticket, IsUsed = false };
 
             //when
-            var parkingLot = new ParkingLot();
+            var parkingLot = InitializeParkingLotWithPosition();
             var parkingBoy = new ParkingBoy();
             Ticket[] tickets = parkingBoy.ParkCars(plateNumber, parkingLot, requryMessage);
             var canFetchCar = parkingBoy.FetchTheCar(wrongTicket, parkingLot, requryMessage);
@@ -96,7 +96,7 @@ namespace ParkingLotTest
             var expectedIncreasedNumberOfCar = plateNumbers.Length;
 
             //when
-            var parkingLot = new ParkingLot();
+            var parkingLot = InitializeParkingLotWithPosition();
             var initialPositionNumber = parkingLot.PositionNumber;
             var initialCarListNumber = parkingLot.CarList.Count;
             var parkingBoy = new ParkingBoy();
@@ -127,7 +127,7 @@ namespace ParkingLotTest
             Ticket usedTicket = new Ticket() { TicketMarker = plateNumber[index], IsUsed = false };
 
             //when
-            var parkingLot = new ParkingLot();
+            var parkingLot = InitializeParkingLotWithPosition();
             var parkingBoy = new ParkingBoy();
             Ticket[] tickets = parkingBoy.ParkCars(plateNumber, parkingLot, false);
             var canFetchCar = parkingBoy.FetchTheCar(usedTicket, parkingLot, requryMessage);
@@ -147,16 +147,10 @@ namespace ParkingLotTest
             const int index = numberOfFetchedCar - 1;
             var plateNumber = new string[numberOfFetchedCar] { "G 123455" };
             Ticket usedTicket = new Ticket() { TicketMarker = plateNumber[index], IsUsed = false };
-            var parkingLot = new ParkingLot();
             var parkingBoy = new ParkingBoy();
+
             //when
-            parkingLot.CarList = new List<string>();
-
-            for (int carIndex = 0; carIndex < parkingLot.PositionNumber; carIndex++)
-            {
-                parkingLot.CarList.Add("G 12345" + carIndex);
-            }
-
+            var parkingLot = InitializeParkingLotWithoutPosition();
             Ticket[] tickets = parkingBoy.ParkCars(plateNumber, parkingLot, false);
 
             //then
@@ -175,7 +169,7 @@ namespace ParkingLotTest
             Ticket requiredTicket = new Ticket() { TicketMarker = plateNumber[index], IsUsed = false };
 
             //when
-            var parkingLot = new ParkingLot();
+            var parkingLot = InitializeParkingLotWithPosition();
             var parkingBoy = new ParkingBoy();
             parkingLot.CarList = new List<string>();
             Ticket[] tickets = parkingBoy.ParkCars(plateNumber, parkingLot, requryMessage);
@@ -200,15 +194,8 @@ namespace ParkingLotTest
             Ticket requiredTicket = new Ticket() { TicketMarker = null, IsUsed = true };
 
             //when
-            var parkingLot = new ParkingLot();
+            var parkingLot = InitializeParkingLotWithoutPosition();
             var parkingBoy = new ParkingBoy();
-            parkingLot.CarList = new List<string>();
-
-            for (int carIndex = 0; carIndex < parkingLot.PositionNumber; carIndex++)
-            {
-                parkingLot.CarList.Add("G 12345" + carIndex);
-            }
-
             Ticket[] tickets = parkingBoy.ParkCars(plateNumber, parkingLot, requryMessage);
             var canFetchCar = parkingBoy.FetchTheCar(requiredTicket, parkingLot, requryMessage);
             var message = parkingBoy.Response;
@@ -231,9 +218,8 @@ namespace ParkingLotTest
             Ticket wrongTicket = new Ticket() { TicketMarker = ticket, IsUsed = false };
 
             //when
-            var parkingLot = new ParkingLot();
+            var parkingLot = InitializeParkingLotWithPosition();
             var parkingBoy = new ParkingBoy();
-            parkingLot.CarList = new List<string>();
             Ticket[] tickets = parkingBoy.ParkCars(plateNumber, parkingLot, requryMessage);
             var canFetchCar = parkingBoy.FetchTheCar(wrongTicket, parkingLot, requryMessage);
             var message = parkingBoy.Response;
@@ -243,6 +229,30 @@ namespace ParkingLotTest
             Assert.Null(fetchedCar);
             Assert.Equal(errorMessage, message);
             Assert.False(canFetchCar);
+        }
+
+        private ParkingLot InitializeParkingLotWithPosition()
+        {
+            var parkingLot = new ParkingLot();
+            parkingLot.CarList = new List<string>();
+            for (int carIndex = 0; carIndex < parkingLot.PositionNumber - 5; carIndex++)
+            {
+                parkingLot.CarList.Add("G 12345" + carIndex);
+            }
+
+            return parkingLot;
+        }
+
+        private ParkingLot InitializeParkingLotWithoutPosition()
+        {
+            var parkingLot = new ParkingLot();
+            parkingLot.CarList = new List<string>();
+            for (int carIndex = 0; carIndex < parkingLot.PositionNumber; carIndex++)
+            {
+                parkingLot.CarList.Add("G 12345" + carIndex);
+            }
+
+            return parkingLot;
         }
     }
 }

@@ -15,25 +15,23 @@ namespace ParkingLot
         public Ticket[] ParkCars(string[] plateNumbers, ParkingLot parkingLot, bool queryErrorMessage)
         {
             const int positionReduceNumberPerTime = 1;
-            if (parkingLot.CarList.Count < ParkingLot.PositionMaxNumber - plateNumbers.Length)
-            {
-                Ticket[] tickets = plateNumbers.Where(number => number != null)
-                    .Select(it => new Ticket { TicketMarker = it, IsUsed = false })
-                    .ToArray();
-                foreach (var plateNumber in plateNumbers)
-                {
-                    parkingLot.CarList.Add(plateNumber);
-                    parkingLot.PositionNumber -= positionReduceNumberPerTime;
-                }
-
-                return tickets;
-            }
-
-            else
+            var hasPositions = plateNumbers.Length <= ParkingLot.PositionMaxNumber - parkingLot.CarList.Count;
+            if (!hasPositions)
             {
                 SendErrorMessage(queryErrorMessage, "noPosition");
                 return null;
             }
+
+            Ticket[] tickets = plateNumbers.Where(number => number != null)
+                    .Select(it => new Ticket { TicketMarker = it, IsUsed = false })
+                    .ToArray();
+            foreach (var plateNumber in plateNumbers)
+            {
+                    parkingLot.CarList.Add(plateNumber);
+                    parkingLot.PositionNumber -= positionReduceNumberPerTime;
+            }
+
+            return tickets;
         }
 
         public bool FetchTheCar(Ticket ticket, ParkingLot parkingLot, bool queryErrorMessage)
