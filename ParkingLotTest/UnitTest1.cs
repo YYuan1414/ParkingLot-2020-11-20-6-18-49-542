@@ -16,6 +16,7 @@ namespace ParkingLotTest
         {
             //given
             var plateNumber = new string[1] { "G 123455" };
+            var parkingBoy = new ParkingBoy();
             var expectedReducedNUmberOfPosition = 1;
             var expectedIncreasedNumberOfCar = 1;
             var index = plateNumber.Length - 1;
@@ -24,7 +25,6 @@ namespace ParkingLotTest
             var parkingLot = InitializeParkingLotWithPosition();
             var initialPositionNumber = parkingLot.PositionNumber;
             var initialCarListNumber = parkingLot.CarList.Count;
-            var parkingBoy = new ParkingBoy();
             parkingBoy.ParkCars(plateNumber, parkingLot, false);
             var currentPositionNumber = parkingLot.PositionNumber;
             var currentCarListNumber = parkingLot.CarList.Count;
@@ -94,12 +94,12 @@ namespace ParkingLotTest
             var plateNumbers = new string[] { "G 123455", "G 234561", "A HG125555" };
             var expectedReducedNUmberOfPosition = plateNumbers.Length;
             var expectedIncreasedNumberOfCar = plateNumbers.Length;
+            var parkingBoy = new ParkingBoy();
 
             //when
             var parkingLot = InitializeParkingLotWithPosition();
             var initialPositionNumber = parkingLot.PositionNumber;
             var initialCarListNumber = parkingLot.CarList.Count;
-            var parkingBoy = new ParkingBoy();
             Ticket[] tickets = parkingBoy.ParkCars(plateNumbers, parkingLot, false);
             var currentPositionNumber = parkingLot.PositionNumber;
             var currentCarListNumber = parkingLot.CarList.Count;
@@ -234,8 +234,9 @@ namespace ParkingLotTest
         private ParkingLot InitializeParkingLotWithPosition()
         {
             var parkingLot = new ParkingLot();
+            var initialNumberOfCars = 5;
             parkingLot.CarList = new List<string>();
-            for (int carIndex = 0; carIndex < parkingLot.PositionNumber - 5; carIndex++)
+            for (int carIndex = 0; carIndex < initialNumberOfCars; carIndex++)
             {
                 parkingLot.CarList.Add("G 12345" + carIndex);
             }
@@ -247,7 +248,7 @@ namespace ParkingLotTest
         {
             var parkingLot = new ParkingLot();
             parkingLot.CarList = new List<string>();
-            for (int carIndex = 0; carIndex < parkingLot.PositionNumber; carIndex++)
+            for (int carIndex = 0; carIndex < ParkingLot.PositionMaxNumber; carIndex++)
             {
                 parkingLot.CarList.Add("G 12345" + carIndex);
             }

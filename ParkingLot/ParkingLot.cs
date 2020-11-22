@@ -9,7 +9,7 @@ namespace ParkingLot
         private int positionNumber = PositionMaxNumber;
         public int PositionNumber
         {
-            get { return positionNumber; }
+            get { return positionNumber - CarList.Count; }
             set { positionNumber = value; }
         }
 
