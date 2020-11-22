@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Xml.Schema;
 
 namespace ParkingLot
 {
@@ -32,27 +33,49 @@ namespace ParkingLot
             return tickets;
         }
 
-        //public Ticket[] ParkCarsSequently(string[] plateNumbers, ParkingLot[] parkingLots, bool queryErrorMessage)
-        //{
-        //    const int positionReduceNumberPerTime = 1;
-        //    var hasPositions = plateNumbers.Length <= ParkingLot.PositionMaxNumber - parkingLot.CarList.Count;
-        //    if (!hasPositions)
-        //    {
-        //        SendErrorMessage(queryErrorMessage, "noPosition");
-        //        return null;
-        //    }
+        public Ticket[] ParkCarsSequently(string[] plateNumbers, ParkingLot[] parkingLots, bool queryErrorMessage)
+        {
+            const int positionReduceNumberPerTime = 1;
+            var totalPositions = parkingLots.Select(parkingLot => { return parkingLot.PositionNumber; }).Sum();
+            Ticket[] allTickets = null;
+            if (totalPositions == 0)
+            {
+                SendErrorMessage(queryErrorMessage, "noPosition");
+                return null;
+            }
 
-        //    Ticket[] tickets = plateNumbers.Where(number => number != null)
-        //        .Select(it => new Ticket { TicketMarker = it, IsUsed = false })
-        //        .ToArray();
-        //    foreach (var plateNumber in plateNumbers)
-        //    {
-        //        parkingLot.CarList.Add(plateNumber);
-        //        parkingLot.PositionNumber -= positionReduceNumberPerTime;
-        //    }
+            foreach (var parkingLot in parkingLots)
+            {
+                var positionsOfEachParkingLots = parkingLot.PositionNumber > plateNumbers.Length
+                    ? plateNumbers.Length
+                    : parkingLot.PositionNumber;
 
-        //    return tickets;
-        //}
+                var subPlateNumbers = plateNumbers.ToList().Take(positionReduceNumberPerTime).ToArray();
+                if (positionsOfEachParkingLots != 0)
+                {
+                    Ticket[] tickets = subPlateNumbers.Where(number => number != null)
+                        .Select(it => new Ticket { TicketMarker = it, IsUsed = false })
+                        .ToArray();
+                    foreach (var plateNumber in subPlateNumbers)
+                    {
+                        parkingLot.CarList.Add(plateNumber);
+                    }
+
+                    if (allTickets == null)
+                    {
+                        allTickets = tickets;
+                    }
+
+                    allTickets = allTickets.Concat(tickets).ToArray();
+                }
+
+                var numberOfRemainedPlateNumbers = plateNumbers.Length - positionsOfEachParkingLots;
+                plateNumbers = plateNumbers.ToList().TakeLast(numberOfRemainedPlateNumbers).ToArray();
+            }
+
+            return allTickets;
+        }
+
         public bool FetchTheCar(Ticket ticket, ParkingLot parkingLot, bool queryErrorMessage)
         {
             if (!string.IsNullOrEmpty(response))

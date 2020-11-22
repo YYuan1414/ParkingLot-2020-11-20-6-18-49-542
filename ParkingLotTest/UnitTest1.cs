@@ -231,6 +231,61 @@ namespace ParkingLotTest
             Assert.False(canFetchCar);
         }
 
+        [Theory]
+        [InlineData()]
+        public void Park_Car_Sequently_Into_ParkingLot_Test()
+        {
+            //given
+            const int numberOfFetchedCar = 2;
+            const int index = 0;
+            const bool requryMessage = true;
+            var plateNumber = new string[numberOfFetchedCar] { "G 123455", "G 276890" };
+            var parkingLots = InitializeParkingLots();
+
+            ////when
+            var parkingBoy = new ParkingBoy();
+            parkingBoy.ParkCarsSequently(plateNumber, parkingLots, requryMessage);
+            var fetchedTheFirstCar = parkingLots[1].CarList.Find(car => car == "G 123455");
+            var fetchedTheSecondCar = parkingLots[2].CarList.Find(car => car == "G 276890");
+
+            ////then
+            Assert.NotNull(fetchedTheFirstCar);
+            Assert.NotNull(fetchedTheSecondCar);
+        }
+
+        private ParkingLot[] InitializeParkingLots()
+        {
+            var parkingLots = new ParkingLot[5];
+            var initialNumberOfCarsInTheFristParkingLot = 10;
+            for (int carIndex = 0; carIndex < initialNumberOfCarsInTheFristParkingLot; carIndex++)
+            {
+                if (carIndex == 0)
+                {
+                    parkingLots[0] = new ParkingLot();
+                }
+
+                parkingLots[0].CarList.Add("G 12345" + carIndex);
+            }
+
+            var initialNumberOfCarsInTheSecondParkingLot = 9;
+            for (int carIndex = 0; carIndex < initialNumberOfCarsInTheSecondParkingLot; carIndex++)
+            {
+                if (carIndex == 0)
+                {
+                    parkingLots[1] = new ParkingLot();
+                }
+
+                parkingLots[1].CarList.Add("G 32345" + carIndex);
+            }
+
+            for (int i = 2; i < parkingLots.Length; i++)
+            {
+                parkingLots[i] = new ParkingLot();
+            }
+
+            return parkingLots;
+        }
+
         private ParkingLot InitializeParkingLotWithPosition()
         {
             var parkingLot = new ParkingLot();
